@@ -1,29 +1,32 @@
+import { atualizaDocumento, encontrarDocumento, incluirDocumento, listarDocumentos } from "./documentosDb.js";
 import io from "./servidor.js";
 
-const documentos = [
-	{
-		nome: "JavaScript",
-		texto: "Texto de Javascript..."
-	},
-	{
-		nome: "Node",
-		texto: "Texto de Node..."
-	},
-	{
-		nome: "Socket.io",
-		texto: "Texto de socket.io..."
-	}
-]
 
 io.on("connection", (socket) => {
 
 	console.log("Um cliente se conectou! ID:", socket.id);
 
-	socket.on("selecionar_documento", (nomeDocumento, callback) => {
+	socket.on("listar_documentos", async (callback)=>{
+		const listaDocs = await listarDocumentos()
+		if ( listaDocs ){
+			console.log(listaDocs);
+			callback(listaDocs);
+		}
+	})
+
+	socket.on("incluir_documento", (nomeDocumento, callback)=>{
+		if ( incluirDocumento(nomeDocumento)){
+			callback(nomeDocumento);
+		}
+	})
+
+	socket.on("selecionar_documento", async (nomeDocumento, callback) => {
 
 		socket.join(nomeDocumento) // "sala de acordo com o documento" - Join cria um agrupamento para transmissao das mensagens
 
-		const documento = encontrarDocumento(nomeDocumento);
+		const documento = await encontrarDocumento(nomeDocumento);
+		
+
 		console.log(documento);
 		if (documento){
 			// socket.emit("documento_encontrado",documento.texto)  - Forma 1 - Criar um evento de retorno e enviar o texto/documento encontrado
@@ -33,10 +36,10 @@ io.on("connection", (socket) => {
 
 	})
 
-	socket.on("texto_editor", (texto, nomeDocumento) => {
+	socket.on("texto_editor", async (texto, nomeDocumento) => {
 		// socket.broadcast.emit("texto_editor_clientes", texto); // Dispara para todos os outros sockets
 
-		const documento = encontrarDocumento(nomeDocumento);
+		const documento = await atualizaDocumento(nomeDocumento, texto);
 		if (documento){
 			documento.texto = texto
 			socket.to(nomeDocumento).emit("texto_editor_clientes", texto);
@@ -45,11 +48,3 @@ io.on("connection", (socket) => {
 
 });
 
-function encontrarDocumento(nome){
-
-	const documento = documentos.find((doc)=>{
-		return doc.nome === nome;
-	})
-
-	return documento;
-}

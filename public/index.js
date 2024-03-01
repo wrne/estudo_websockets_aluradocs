@@ -1,0 +1,25 @@
+import { incluirNovoDocumento } from "./socket-front-index.js";
+
+const listaDocumentos = document.getElementById("lista-documentos")
+const formListaDocumentos = document.getElementById("form-adiciona-documento");
+const inputNovoDocumento = document.getElementById("input-documento");
+
+function incluirDocumentoLista(nomeDocumento) {
+	listaDocumentos.innerHTML += `
+	<a href="documento.html?nome=${nomeDocumento}" class="list-group-item list-group-item-action">
+		${nomeDocumento}
+	</a>
+	`;
+}
+
+formListaDocumentos.addEventListener("submit", (evento)=>{
+	evento.preventDefault();
+	console.log(inputNovoDocumento.value);
+	if(inputNovoDocumento.value){
+		incluirNovoDocumento(inputNovoDocumento.value)
+		inputNovoDocumento.value = "";
+	}
+
+})
+
+export {incluirDocumentoLista}
