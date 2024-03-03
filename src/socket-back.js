@@ -1,4 +1,4 @@
-import { atualizaDocumento, encontrarDocumento, incluirDocumento, listarDocumentos } from "./documentosDb.js";
+import { atualizaDocumento, encontrarDocumento, excluirDocumento, incluirDocumento, listarDocumentos } from "./documentosDb.js";
 import io from "./servidor.js";
 
 
@@ -9,14 +9,19 @@ io.on("connection", (socket) => {
 	socket.on("listar_documentos", async (callback)=>{
 		const listaDocs = await listarDocumentos()
 		if ( listaDocs ){
-			console.log(listaDocs);
 			callback(listaDocs);
 		}
 	})
 
-	socket.on("incluir_documento", (nomeDocumento, callback)=>{
-		if ( incluirDocumento(nomeDocumento)){
-			callback(nomeDocumento);
+	socket.on("incluir_documento", async (nomeDocumento, callback)=>{
+		const docExiste = (await encontrarDocumento(nomeDocumento) !== null);
+
+		if (!docExiste){
+
+			if ( incluirDocumento(nomeDocumento)){
+				// callback(nomeDocumento);
+				io.emit("incluir_documento_sucesso", nomeDocumento);
+			}
 		}
 	})
 
@@ -46,5 +51,14 @@ io.on("connection", (socket) => {
 		}
 	});
 
+	socket.on("excluir_documento", async (nomeDoc) => {
+		
+		if (await excluirDocumento(nomeDoc)){
+			io.emit("excluir_documento_sucesso", nomeDoc)
+			console.log('Emitindo exclusão para os clients');
+		}
+		
+	});
+	
 });
 

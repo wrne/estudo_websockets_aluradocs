@@ -6,20 +6,26 @@ const inputNovoDocumento = document.getElementById("input-documento");
 
 function incluirDocumentoLista(nomeDocumento) {
 	listaDocumentos.innerHTML += `
-	<a href="documento.html?nome=${nomeDocumento}" class="list-group-item list-group-item-action">
+	<a href="documento.html?nome=${nomeDocumento}" class="list-group-item list-group-item-action" id="documento-${nomeDocumento}">
 		${nomeDocumento}
 	</a>
 	`;
-}
+};
 
-formListaDocumentos.addEventListener("submit", (evento)=>{
+function ExcluirDocumentoLista(nomeDocume) {
+	const documento = document.getElementById(`documento-${nomeDocume}`);
+	console.log(`Documento encontrado: ${documento}`);
+	listaDocumentos.removeChild(documento);
+};
+
+formListaDocumentos.addEventListener("submit", (evento) => {
 	evento.preventDefault();
 	console.log(inputNovoDocumento.value);
-	if(inputNovoDocumento.value){
+	if (inputNovoDocumento.value) {
 		incluirNovoDocumento(inputNovoDocumento.value)
 		inputNovoDocumento.value = "";
 	}
 
 })
 
-export {incluirDocumentoLista}
+export { incluirDocumentoLista, ExcluirDocumentoLista }

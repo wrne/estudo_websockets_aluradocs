@@ -9,8 +9,8 @@ function encontrarDocumento(nome){
 }
 
 async function listarDocumentos(){
-	const listaDocs = await documentosColecao.find().toArray();
-	console.log(listaDocs);
+
+	const listaDocs = await documentosColecao.find().toArray();	
 	return listaDocs;
 }
 
@@ -20,7 +20,6 @@ async function incluirDocumento(nome){
 		nome,
 		texto: ""
 	})
-	console.log(atualizacao);
 	return atualizacao.acknowledged;
 
 }
@@ -36,4 +35,14 @@ function atualizaDocumento(nome, texto){
 	return atualizacao;
 
 }
-export {encontrarDocumento, atualizaDocumento, incluirDocumento, listarDocumentos}
+
+async function excluirDocumento(nome){
+
+	const resultado = await  documentosColecao.deleteOne({nome});
+	if (resultado.acknowledged)
+		return true;
+
+	return false;
+};
+
+export {encontrarDocumento, atualizaDocumento, incluirDocumento, listarDocumentos, excluirDocumento}
