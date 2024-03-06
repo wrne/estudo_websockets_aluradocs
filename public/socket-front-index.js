@@ -1,34 +1,27 @@
-import { ExcluirDocumentoLista, incluirDocumentoLista } from "./index.js";
+import { inserirLinkDocumento, removerLinkDocumento } from "./index.js";
 
 const socket = io();
 
-socket.emit("listar_documentos", (listaDocs)=>{
-	console.log("solicitado a listagem de documentos");
-	listaDocs.forEach(doc => {
-		incluirDocumentoLista(doc.nome);		
+socket.emit("obter_documentos", (documentos) => {
+	documentos.forEach((documento) => {
+		inserirLinkDocumento(documento.nome);
 	});
 });
 
-
-function incluirNovoDocumento(nomeDocumento){
-	
-	// socket.emit("incluir_documento",nomeDocumento,()=>{
-	// 	console.log('emitindo evento inlcuir_documento');
-	// 	incluirDocumentoLista(nomeDocumento);
-	// })
-	socket.emit("incluir_documento",nomeDocumento)
+function emitirAdicionarDocumento(nome) {
+	socket.emit("adicionar_documento", nome);
 }
 
-socket.on("incluir_documento_sucesso", (nomeDoc)=>{
+socket.on("adicionar_documento_interface", (nome) => {
+	inserirLinkDocumento(nome);
+});
 
-	incluirDocumentoLista(nomeDoc)
+socket.on("documento_existente", (nome) => {
+	alert(`O documento ${nome} já existe!`);
+});
 
-})
+socket.on("excluir_documento_sucesso", (nome) => {
+	removerLinkDocumento(nome);
+});
 
-socket.on("excluir_documento_sucesso", (nome)=>{
-
-	ExcluirDocumentoLista(nome);
-
-})
-
-export {incluirNovoDocumento}
+export { emitirAdicionarDocumento };
