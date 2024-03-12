@@ -5,12 +5,27 @@ import registrarEventosDocumentos from "./registrarEventos/documento.js";
 import registrarEventosInicio from "./registrarEventos/inicio.js";
 import registrarEventosLogin from "./registrarEventos/login.js";
 
+
 import io from "./servidor.js";
+import autorizarUsuario from "./middlewares/autorizarUsuario.js";
 
-io.on("connection", (socket) => {
+// Referencia do namespace de usuarios
+const nspUsuarios = io.of("/usuarios");
 
-	registrarEventosInicio(socket, io);
-	registrarEventosDocumentos(socket, io);
+// middleware usado somente para o namespace "usuarios"
+nspUsuarios.use(autorizarUsuario);
+
+// middleware usado somente para o namespace "usuarios"
+nspUsuarios.on("connection", (socket) => {
+
+	registrarEventosInicio(socket, nspUsuarios);
+	registrarEventosDocumentos(socket, nspUsuarios);
+
+});
+
+// middleware usado somente para o namespace "principal"
+io.of("/").on("connection", (socket) => {
+
 	registrarEventosCadastro(socket, io);
 	registrarEventosLogin(socket, io);
 
