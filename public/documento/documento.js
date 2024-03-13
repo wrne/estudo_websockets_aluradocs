@@ -10,10 +10,30 @@ const nomeDocumento = parametros.get("nome");
 const textoEditor = document.getElementById("editor-texto");
 const tituloDocumento = document.getElementById("titulo-documento");
 const botaoExcluir = document.getElementById("excluir-documento");
+const listaUsuarios = document.getElementById("usuarios-conectados")
 
 tituloDocumento.textContent = nomeDocumento || "Documento sem título";
 
-selecionarDocumento(nomeDocumento);
+function tratarAutorizacaoSucesso(payloadToken) {
+
+	selecionarDocumento({ nomeDocumento, nomeUsuario: payloadToken.nomeUsuario });
+
+}
+
+function atualizarInterfaceUsuarios(usuariosDocumento) {
+
+	listaUsuarios.innerHTML = "";
+
+	usuariosDocumento.forEach(usuario => {
+		listaUsuarios.innerHTML += `<li class="list-group-item">${usuario}</li>`;
+	});
+
+}
+
+function informaUsuarioJaNoDocumento(){
+	alert("Documento já aberto em outra página.");
+	window.location.href = "/";
+}
 
 textoEditor.addEventListener("keyup", () => {
 	emitirTextoEditor({
@@ -37,4 +57,4 @@ function alertarERedirecionar(nome) {
 	}
 }
 
-export { atualizaTextoEditor, alertarERedirecionar };
+export { atualizaTextoEditor, alertarERedirecionar, tratarAutorizacaoSucesso, atualizarInterfaceUsuarios, informaUsuarioJaNoDocumento };

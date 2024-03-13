@@ -6,8 +6,9 @@ function autorizarUsuario(socket, next) {
 	try {
 
 		// Dispara erro caso o token seja inválido
-		jwt.verify(tokenJwt, process.env.SEGREDO_JWT);
-		
+		const payloadToken = jwt.verify(tokenJwt, process.env.SEGREDO_JWT);
+		socket.emit("autorizacao_sucesso", payloadToken);
+
 		next();
 
 	} catch (error) {
